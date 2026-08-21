@@ -253,7 +253,7 @@ Check `backend/.env`: the line must be `OPENAI_API_KEY="sk-..."` with no spaces 
 The backend only allows `http://localhost:4200`. Make sure you open the app at exactly that address (not `127.0.0.1:4200`) and that the backend is running on port 3000. If you changed ports, update `enableCors` in `backend/src/main.ts`.
 
 **8. `The Angular CLI requires a minimum Node.js version ...`**
-Your Node is too old. Install Node 24 LTS (see prerequisites), close and reopen the terminal, verify with `node -v`, then run `npm install` again in `frontend`.
+Your Node is too old. Install Node 24 LTS (see prerequisites), close and reopen the terminal, verify with `node -v`, then run `npm install` again in `frontend`. The same error on a build server means it picked its own default Node — the `.node-version` file in `backend/` and `frontend/` pins the version, so make sure those files are committed.
 
 **9. `npm error code ERESOLVE` during `npm install`**
 Usually caused by a very old npm/Node. Upgrade to Node 24 (which brings a modern npm), delete the `node_modules` folder and `package-lock.json` in that directory, and run `npm install` again.
