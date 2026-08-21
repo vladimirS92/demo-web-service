@@ -3,8 +3,9 @@ import { Injectable, inject } from '@angular/core';
 import {
   ChatResponse, Finding, Paged, Project, Scan, ScanType, StatsOverview,
 } from './models';
+import { API_BASE } from './api-base';
 
-const API = 'http://localhost:3000/api';
+const API = API_BASE;
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {

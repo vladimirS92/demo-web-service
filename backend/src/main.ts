@@ -10,7 +10,10 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   // Allow the Angular dev server to call this API
-  app.enableCors({ origin: ['http://localhost:4200'], credentials: true });
+  app.enableCors({
+    origin: ['http://localhost:4200', process.env.FRONTEND_ORIGIN || ''].filter(Boolean),
+    credentials: true,
+  });
 
   // Validate every incoming request body against its DTO
   app.useGlobalPipes(

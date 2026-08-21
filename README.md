@@ -116,6 +116,11 @@ copy .env.example .env
 
 *What it does:* creates the private configuration file. The defaults already match the Docker database — you don't need to change anything to get started. (You'll paste your OpenAI key here later — see [section 3](#3-where-to-put-your-openai-api-key).)
 
+> One extra variable is only needed when the frontend is **not** served from `http://localhost:4200`
+> (for example a deployed build): set `FRONTEND_ORIGIN` in `backend/.env` to that exact origin,
+> with no trailing slash, so the browser is allowed to call the API. Leave it empty locally.
+> The frontend's own API address lives in `frontend/src/app/core/api-base.ts`.
+
 ### Step 3 — Install backend dependencies
 
 ```bash

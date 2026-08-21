@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { AuthService } from '../../core/auth.service';
+import { API_BASE } from '../../core/api-base';
 
 @Component({
   selector: 'app-settings',
@@ -19,11 +20,12 @@ import { AuthService } from '../../core/auth.service';
       <h3>API documentation</h3>
       <p>
         Swagger / OpenAPI docs:
-        <a href="http://localhost:3000/api/docs" target="_blank" rel="noopener">http://localhost:3000/api/docs</a>
+        <a [href]="docsUrl" target="_blank" rel="noopener">{{ docsUrl }}</a>
       </p>
     </div>
   `,
 })
 export class SettingsComponent {
   auth = inject(AuthService);
+  readonly docsUrl = `${API_BASE}/docs`;
 }

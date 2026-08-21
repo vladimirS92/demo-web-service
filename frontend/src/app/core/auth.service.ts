@@ -3,6 +3,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { tap } from 'rxjs';
 import { LoginResponse, User } from './models';
+import { API_BASE } from './api-base';
 
 const TOKEN_KEY = 'securescan_token';
 const USER_KEY = 'securescan_user';
@@ -20,7 +21,7 @@ export class AuthService {
 
   login(username: string, password: string) {
     return this.http
-      .post<LoginResponse>('http://localhost:3000/api/auth/login', { username, password })
+      .post<LoginResponse>(`${API_BASE}/auth/login`, { username, password })
       .pipe(
         tap((res) => {
           localStorage.setItem(TOKEN_KEY, res.accessToken);
