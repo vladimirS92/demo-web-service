@@ -3,15 +3,42 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
+// Origins the browser is allowed to call this API from.
+// Always allowed: the local Angular dev server and the deployed demo frontend.
+// Add more (or override for another deployment) via the FRONTEND_ORIGIN env var,
+// which accepts a comma-separated list. Trailing slashes are ignored.
+function allowedOrigins(): string[] {
+  const trim = (o: string) => o.trim().replace(/\/+$/, '');
+  return [
+    'http://localhost:4200',
+    'https://demo-web-service-fe.onrender.com',
+    ...(process.env.FRONTEND_ORIGIN ?? '').split(','),
+  ]
+    .map(trim)
+    .filter(Boolean);
+}
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // All routes are served under /api  (e.g. http://localhost:3000/api/projects)
   app.setGlobalPrefix('api');
 
-  // Allow the Angular dev server to call this API
+  const origins = allowedOrigins();
+  // `enableCors` takes a union of option shapes, so TypeScript cannot infer the
+  // callback's parameter types from context - they are annotated explicitly.
+  type OriginCallback = (err: Error | null, allow: boolean) => void;
   app.enableCors({
-    origin: ['http://localhost:4200', process.env.FRONTEND_ORIGIN || ''].filter(Boolean),
+    origin: (origin: string | undefined, callback: OriginCallback) => {
+      // No Origin header = not a browser request (curl, Swagger UI, health checks) -> allow.
+      if (!origin || origins.includes(origin.replace(/\/+$/, ''))) {
+        callback(null, true);
+        return;
+      }
+      // Send no CORS headers, so the browser blocks it (instead of a 500).
+      console.warn(`CORS: blocked origin ${origin}`);
+      callback(null, false);
+    },
     credentials: true,
   });
 
@@ -34,5 +61,6 @@ async function bootstrap() {
   await app.listen(port);
   console.log(`SecureScan backend running on http://localhost:${port}`);
   console.log(`Swagger docs:                 http://localhost:${port}/api/docs`);
+  console.log(`Allowed browser origins:      ${origins.join(', ')}`);
 }
 bootstrap();
