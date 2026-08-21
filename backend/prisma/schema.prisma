@@ -1,0 +1,101 @@
+// SecureScan database schema (Prisma ORM)
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  username String @unique
+  password String // bcrypt hash
+  name     String
+  role     String @default("REVIEWER")
+}
+
+model Project {
+  id            Int       @id @default(autoincrement())
+  name          String    @unique
+  description   String    @default("")
+  repoUrl       String
+  defaultBranch String    @default("main")
+  stack         String    @default("TypeScript")
+  owner         String    @default("")
+  createdAt     DateTime  @default(now())
+  scans         Scan[]
+  findings      Finding[]
+}
+
+enum ScanType {
+  SAST
+  DAST
+}
+
+enum ScanStatus {
+  QUEUED
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+model Scan {
+  id          Int        @id @default(autoincrement())
+  project     Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId   Int
+  type        ScanType
+  status      ScanStatus @default(QUEUED)
+  startedAt   DateTime   @default(now())
+  finishedAt  DateTime?
+  durationSec Int?
+  findings    Finding[]
+}
+
+enum Severity {
+  CRITICAL
+  HIGH
+  MEDIUM
+  LOW
+  INFO
+}
+
+enum FindingStatus {
+  OPEN
+  CONFIRMED
+  FALSE_POSITIVE
+  ACCEPTED_RISK
+  FIXED
+}
+
+model Finding {
+  id             Int                   @id @default(autoincrement())
+  scan           Scan                  @relation(fields: [scanId], references: [id], onDelete: Cascade)
+  scanId         Int
+  project        Project               @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId      Int
+  title          String
+  description    String
+  severity       Severity
+  status         FindingStatus         @default(OPEN)
+  vulnType       String
+  cweId          String
+  filePath       String? // SAST
+  line           Int? // SAST
+  url            String? // DAST
+  recommendation String
+  createdAt      DateTime              @default(now())
+  statusHistory  FindingStatusChange[]
+}
+
+model FindingStatusChange {
+  id        Int           @id @default(autoincrement())
+  finding   Finding       @relation(fields: [findingId], references: [id], onDelete: Cascade)
+  findingId Int
+  oldStatus FindingStatus
+  newStatus FindingStatus
+  comment   String        @default("")
+  changedBy String
+  changedAt DateTime      @default(now())
+}

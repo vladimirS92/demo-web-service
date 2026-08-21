@@ -1,0 +1,22 @@
+# --- Secrets ---
+.env
+*/.env
+**/.env
+
+# --- Dependencies ---
+node_modules/
+
+# --- Build output ---
+dist/
+.angular/
+out-tsc/
+
+# --- Logs & OS junk ---
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+
+# --- Editor ---
+.vscode/
+.idea/

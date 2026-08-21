@@ -1,0 +1,34 @@
+/* SecureScan – global corporate light theme */
+:root {
+  --ss-bg: #f4f6fa;
+  --ss-surface: #ffffff;
+  --ss-border: #e2e8f0;
+  --ss-text: #1e293b;
+  --ss-muted: #64748b;
+  --ss-brand: #1d4ed8;
+  --ss-sidebar: #0f1f3d;
+}
+
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--ss-bg);
+  color: var(--ss-text);
+}
+
+h1, h2, h3 { font-weight: 600; }
+a { color: var(--ss-brand); text-decoration: none; }
+
+.ss-card {
+  background: var(--ss-surface);
+  border: 1px solid var(--ss-border);
+  border-radius: 10px;
+  padding: 1.25rem;
+}
+
+.page-title { font-size: 1.4rem; margin: 0; }
+.page-subtitle { color: var(--ss-muted); margin: 0.25rem 0 0; font-size: 0.9rem; }
+
+.clickable-row { cursor: pointer; }
+.clickable-row:hover { background: #f1f5f9 !important; }

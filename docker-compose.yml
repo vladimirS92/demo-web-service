@@ -1,0 +1,41 @@
+# SecureScan – local infrastructure
+# Starts PostgreSQL. Run with:  docker compose up -d
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: securescan-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: securescan
+      POSTGRES_PASSWORD: securescan
+      POSTGRES_DB: securescan
+    ports:
+      - "5432:5432"
+    volumes:
+      - securescan_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U securescan -d securescan"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # OPTIONAL: run the backend in Docker too.
+  # For beginners we recommend running the backend with `npm run start:dev`
+  # (see README). To use this instead: `docker compose --profile full up -d --build`
+  backend:
+    profiles: ["full"]
+    build: ./backend
+    container_name: securescan-backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://securescan:securescan@db:5432/securescan?schema=public
+      JWT_SECRET: change-me-in-.env
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
+    ports:
+      - "3000:3000"
+
+volumes:
+  securescan_pgdata:
